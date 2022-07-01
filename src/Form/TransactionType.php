@@ -14,9 +14,7 @@ class TransactionType extends AbstractType
         $builder
             ->add('name')
             ->add('montant')
-            ->add('createdAt')
             ->add('type')
-            ->add('user')
             ->add('category')
         ;
     }

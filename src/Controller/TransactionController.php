@@ -24,11 +24,13 @@ class TransactionController extends AbstractController
     #[Route('/new', name: 'app_transaction_new', methods: ['GET', 'POST'])]
     public function new(Request $request, TransactionRepository $transactionRepository): Response
     {
+        $user = $this->getUser();
         $transaction = new Transaction();
         $form = $this->createForm(TransactionType::class, $transaction);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $transaction->setUser($user);
             $transactionRepository->add($transaction, true);
 
             return $this->redirectToRoute('app_transaction_index', [], Response::HTTP_SEE_OTHER);

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\TransactionRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Monolog\DateTimeImmutable;
 
 #[ORM\Entity(repositoryClass: TransactionRepository::class)]
 class Transaction
@@ -109,5 +110,9 @@ class Transaction
         $this->category = $category;
 
         return $this;
+    }
+
+    public function __construct() {
+        $this->createdAt = new \DateTimeImmutable(date('d-m-Y H:i:s'), new \DateTimeZone("Europe/Paris"));
     }
 }
