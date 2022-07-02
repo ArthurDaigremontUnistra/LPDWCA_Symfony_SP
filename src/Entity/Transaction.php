@@ -24,15 +24,15 @@ class Transaction
     private $createdAt;
 
     #[ORM\ManyToOne(targetEntity: Type::class, inversedBy: 'transactions')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private $type;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'transactions')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private $user;
 
     #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'transactions')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private $category;
 
     public function getId(): ?int
@@ -113,6 +113,10 @@ class Transaction
     }
 
     public function __construct() {
-        $this->createdAt = new \DateTimeImmutable(date('d-m-Y H:i:s'), new \DateTimeZone("Europe/Paris"));
+        $this->createdAt = new DateTimeImmutable(date('d-m-Y H:i:s'), new \DateTimeZone("Europe/Paris"));
+    }
+
+    public function __toString() {
+        return $this->getName();
     }
 }

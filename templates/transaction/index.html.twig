@@ -35,5 +35,6 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_transaction_new') }}">Create new</a>
+    <a href="{{ path('app_transaction_new') }}?type=credit">Ajouter une nouvelle rentrée d'argent</a>
+    <a href="{{ path('app_transaction_new') }}?type=debit">Ajouter une nouvelle dépense</a>
 {% endblock %}

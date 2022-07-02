@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Category;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\Type;
 
 /**
  * @extends ServiceEntityRepository<Category>
@@ -37,6 +38,17 @@ class CategoryRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function findByTypeOrderedByAscName(Type $type): array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.type = :type')
+            ->setParameter('type', $type)
+            ->orderBy('c.title', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
     }
 
 //    /**
