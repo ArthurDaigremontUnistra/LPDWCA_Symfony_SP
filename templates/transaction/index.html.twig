@@ -3,38 +3,182 @@
 {% block title %}Transaction index{% endblock %}
 
 {% block body %}
-    <h1>Transaction index</h1>
+    <div class="bilanFinancier">
+
+        <h2>Bilan</h2>
+
+        {% set totalCredit = 0 %}
+        {% set totalDebit = 0 %}
+        {% set totalRapport = 0 %}
+        {% set totalCredit_2022 = 0 %}
+        {% set totalDebit_2022 = 0 %}
+        {% set totalRapport_2022 = 0 %}
+        {% set totalCredit_2021 = 0 %}
+        {% set totalDebit_2021 = 0 %}
+        {% set totalRapport_2021 = 0 %}
+        {% set totalCredit_2020 = 0 %}
+        {% set totalDebit_2020 = 0 %}
+        {% set totalRapport_2020 = 0 %}
+
+        {% for transaction in transactions %}
+            {% if transaction.type == "Crédit" %}
+                {% set totalCredit = totalCredit + transaction.montant %}
+            {% elseif transaction.type == "Débit" %}
+                {% set totalDebit = totalDebit + transaction.montant %}
+            {% endif %}
+        {% endfor %}
+
+        {% set totalRapport = totalCredit - totalDebit %}
+
+        <div class="bilanTotal">
+
+            <h3>Bilan total</h3>
+
+            <p style="color: #A3DCBE">Total des crédits : + {{ totalCredit }} €</p>
+            <p style="color: #F1959B">Total des débits : - {{ totalDebit }} €</p>
+
+            {% if totalRapport < 0 %}
+                <p style="color: #00B9FF">Total du rapport entre les crédits et les débits : {{ totalRapport }} €</p>
+            {% elseif totalRapport > 0 %}
+                <p style="color: #00B9FF">Total du rapport entre les crédits et les débits : + {{ totalRapport }} €</p>
+            {% elseif totalRapport == 0 %}
+                <p style="color: #00B9FF">Total du rapport entre les crédits et les débits : {{ totalRapport }} €</p>
+            {% endif %}
+
+            {% for transaction in transactions %}
+                {% set currentYear = transaction.createdAt ? transaction.createdAt|date('Y') : '' %}
+                {% if transaction.type == "Crédit" %}
+                    {% if currentYear == "2022" %}
+                        {% set totalCredit_2022 = totalCredit_2022 + transaction.montant %}
+                    {% elseif currentYear == "2021" %}
+                        {% set totalCredit_2021 = totalCredit_2021 + transaction.montant %}
+                    {% elseif currentYear == "2020" %}
+                        {% set totalCredit_2020 = totalCredit_2020 + transaction.montant %}
+                    {% endif %}
+                {% elseif transaction.type == "Débit" %}
+                    {% if currentYear == "2022" %}
+                        {% set totalDebit_2022 = totalDebit_2022 + transaction.montant %}
+                    {% elseif currentYear == "2021" %}
+                        {% set totalDebit_2021 = totalDebit_2021 + transaction.montant %}
+                    {% elseif currentYear == "2020" %}
+                        {% set totalDebit_2020 = totalDebit_2020 + transaction.montant %}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+
+            {% set totalRapport_2020 = totalCredit_2020 - totalDebit_2020 %}
+            {% set totalRapport_2021 = totalCredit_2021 - totalDebit_2021 %}
+            {% set totalRapport_2022 = totalCredit_2022 - totalDebit_2022 %}
+
+        </div>
+
+        <div class="bilan2022">
+
+            <h3>2022</h3>
+
+            <p style="color: #A3DCBE">Total des crédits pour l'année 2022 : + {{ totalCredit_2022 }} €</p>
+            <p style="color: #F1959B">Total des débits pour l'année 2022 : - {{ totalDebit_2022 }} €</p>
+
+            {% if totalRapport_2022 < 0 %}
+                <p style="color: #00B9FF">Total du rapport entre les crédits et les débits pour l'année 2022 : {{ totalRapport_2022 }} €</p>
+            {% elseif totalRapport_2022 > 0 %}
+                <p style="color: #00B9FF">Total du rapport entre les crédits et les débits pour l'année 2022 : + {{ totalRapport_2022 }} €</p>
+            {% elseif totalRapport_2022 == 0 %}
+                <p style="color: #00B9FF">Total du rapport entre les crédits et les débits pour l'année 2022 : {{ totalRapport_2022 }} €</p>
+            {% endif %}
+
+        </div>
+
+        <div class="bilan2021">
+
+            <h3>2021</h3>
+
+            <p style="color: #A3DCBE">Total des crédits pour l'année 2021 : + {{ totalCredit_2021 }} €</p>
+            <p style="color: #F1959B">Total des débits pour l'année 2021 : - {{ totalDebit_2021 }} €</p>
+
+            {% if totalRapport_2021 < 0 %}
+                <p style="color: #00B9FF">Total du rapport entre les crédits et les débits pour l'année 2021 : {{ totalRapport_2021 }} €</p>
+            {% elseif totalRapport_2021 > 0 %}
+                <p style="color: #00B9FF">Total du rapport entre les crédits et les débits pour l'année 2021 : + {{ totalRapport_2021 }} €</p>
+            {% elseif totalRapport_2021 == 0 %}
+                <p style="color: #00B9FF">Total du rapport entre les crédits et les débits pour l'année 2021 : {{ totalRapport_2021 }} €</p>
+            {% endif %}
+
+        </div>
+
+        <div class="bilan2020">
+
+            <h3>2020</h3>
+
+            <p style="color: #A3DCBE">Total des crédits pour l'année 2020 : + {{ totalCredit_2020 }} €</p>
+            <p style="color: #F1959B">Total des débits pour l'année 2020 : - {{ totalDebit_2020 }} €</p>
+
+            {% if totalRapport_2020 < 0 %}
+                <p style="color: #00B9FF">Total du rapport entre les crédits et les débits pour l'année 2020 : {{ totalRapport_2020 }} €</p>
+            {% elseif totalRapport_2020 > 0 %}
+                <p style="color: #00B9FF">Total du rapport entre les crédits et les débits pour l'année 2020 : + {{ totalRapport_2020 }} €</p>
+            {% elseif totalRapport_2020 == 0 %}
+                <p style="color: #00B9FF">Total du rapport entre les crédits et les débits pour l'année 2020 : {{ totalRapport_2020 }} €</p>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <h1>Liste des transactions</h1>
 
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Name</th>
+                <th>Nom</th>
                 <th>Montant</th>
-                <th>CreatedAt</th>
-                <th>actions</th>
+                <th>Catégorie</th>
+                <th>Moyen de paiement</th>
+                <th>Date</th>
+                <th>Voir</th>
+                <th>Modifier</th>
+                <th>Supprimer</th>
             </tr>
         </thead>
         <tbody>
+
         {% for transaction in transactions %}
-            <tr>
-                <td>{{ transaction.id }}</td>
+            {% if transaction.type == "Crédit" %}
+                <tr style="background-color: #A3DCBE;">
+            {% elseif transaction.type == "Débit" %}
+                <tr style="background-color: #F1959B;">
+            {% endif %}
+
                 <td>{{ transaction.name }}</td>
-                <td>{{ transaction.montant }}</td>
-                <td>{{ transaction.createdAt ? transaction.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>
-                    <a href="{{ path('app_transaction_show', {'id': transaction.id}) }}">show</a>
-                    <a href="{{ path('app_transaction_edit', {'id': transaction.id}) }}">edit</a>
+                <td>{{ transaction.montant }} €</td>
+                <td>{{ transaction.category }}</td>
+                <td>{{ transaction.moyenDePaiement }}</td>
+                <td>{{ transaction.createdAt ? transaction.createdAt|date('d/m/Y - H:i:s') : '' }}</td>
+                <td class="imgIcon">
+                    <a href="{{ path('app_transaction_show', {'id': transaction.id}) }}"><img src="{{ asset('img/details.png') }}" width="30px"></a>
+                </td>
+                {% if transaction.type == "Crédit" %}
+                    <td class="imgIcon">
+                        <a href="{{ path('app_transaction_edit', {'id': transaction.id}) }}?type=credit"><img src="{{ asset('img/pen.png') }}" width="30px"></a>
+                    </td>
+                {% elseif transaction.type == "Débit" %}
+                    <td class="imgIcon">
+                        <a href="{{ path('app_transaction_edit', {'id': transaction.id}) }}?type=debit"><img src="{{ asset('img/pen.png') }}" width="30px"></a>
+                    </td>
+                {% endif %}
+                <td class="imgIcon">
+                    <a href="{{ path('app_transaction_delete', {'id': transaction.id}) }}"><img src="{{ asset('img/garbage.png') }}" width="30px"></a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="5">no records found</td>
+                <td colspan="5">Pas de transaction.</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_transaction_new') }}?type=credit">Ajouter une nouvelle rentrée d'argent</a>
-    <a href="{{ path('app_transaction_new') }}?type=debit">Ajouter une nouvelle dépense</a>
+    <div class="btnContainer">
+        <div class="btn"><div><a href="/"><p>Retour</p></a></div></div>
+    </div>
 {% endblock %}

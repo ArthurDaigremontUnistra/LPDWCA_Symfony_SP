@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MoyenDePaiement index{% endblock %}
+
+{% block body %}
+    <h1>Liste des moyens de paiement</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Identifiant</th>
+                <th>Nom</th>
+                <th>Description</th>
+                <th>Voir</th>
+                <th>Modifier</th>
+                <th>Supprimer</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for moyen_de_paiement in moyen_de_paiements %}
+            <tr>
+                <td>{{ moyen_de_paiement.id }}</td>
+                <td>{{ moyen_de_paiement.title }}</td>
+                <td>{{ moyen_de_paiement.description }}</td>
+                <td class="imgIcon">
+                    <a href="{{ path('app_moyen_de_paiement_show', {'id': moyen_de_paiement.id}) }}"><img src="{{ asset('img/details.png') }}" width="30px"></a>
+                </td>
+                <td class="imgIcon">
+                    <a href="{{ path('app_moyen_de_paiement_edit', {'id': moyen_de_paiement.id}) }}"><img src="{{ asset('img/pen.png') }}" width="30px"></a>
+                </td>
+                <td class="imgIcon">
+                    <a href="{{ path('app_moyen_de_paiement_delete', {'id': moyen_de_paiement.id}) }}"><img src="{{ asset('img/garbage.png') }}" width="30px"></a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="btnContainer">
+        <div class="btn"><div><a href="{{ path('app_moyen_de_paiement_new') }}">Créer un nouveau moyen de paiement</a></div></div>
+    </div>
+
+    <div class="btnContainer">
+        <div class="btn"><div><a href="/"><p>Retour</p></a></div></div>
+    </div>
+{% endblock %}

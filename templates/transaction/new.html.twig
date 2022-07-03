@@ -3,18 +3,21 @@
 {% block title %}New Transaction{% endblock %}
 
 {% block body %}
-    <h1>Create new Transaction</h1>
+    <div class="form">
+        <h1>Créer une nouvelle transaction</h1>
 
-    {{ form_start(form) }}
+        {{ form_start(form) }}
 
-        {{ form_row(form.name) }}
-        {{ form_row(form.montant) }}
-        {{ form_row(form.type) }}
-        {{ form_row(form.category) }}
+            {{ form_row(form.name) }}
+            {{ form_row(form.montant) }}
+            {{ form_row(form.type) }}
+            {{ form_row(form.category) }}
+            {{ form_row(form.moyenDePaiement) }}
 
-        <button type="submit">Save</button>
+            <button type="submit">Ajouter</button>
 
-    {{ form_end(form) }}
+        {{ form_end(form) }}
 
-    <a href="{{ path('app_transaction_index') }}">back to list</a>
+        <div class="btn"><div><a href="{{ path('app_transaction_index') }}">Retour</a></div></div>
+    </div>
 {% endblock %}

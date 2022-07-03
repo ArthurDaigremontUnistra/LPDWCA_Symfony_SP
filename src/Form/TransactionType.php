@@ -14,6 +14,16 @@ use App\Repository\CategoryRepository;
 
 class TransactionType extends AbstractType
 {
+    /*public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder
+            ->add('name')
+            ->add('montant')
+            ->add('type')
+            ->add('category')
+        ;
+    }*/
+
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

@@ -1,0 +1,94 @@
+<?php
+
+namespace App\Entity;
+
+use App\Repository\MoyenDePaiementRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: MoyenDePaiementRepository::class)]
+class MoyenDePaiement
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private $id;
+
+    #[ORM\Column(type: 'string', length: 50)]
+    private $title;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private $description;
+
+    #[ORM\OneToMany(mappedBy: 'moyenDePaiement', targetEntity: Transaction::class, orphanRemoval: true)]
+    private $transactions;
+
+    public function __construct()
+    {
+        $this->transactions = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Transaction>
+     */
+    public function getTransactions(): Collection
+    {
+        return $this->transactions;
+    }
+
+    public function addTransaction(Transaction $transaction): self
+    {
+        if (!$this->transactions->contains($transaction)) {
+            $this->transactions[] = $transaction;
+            $transaction->setMoyenDePaiement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTransaction(Transaction $transaction): self
+    {
+        if ($this->transactions->removeElement($transaction)) {
+            // set the owning side to null (unless already changed)
+            if ($transaction->getMoyenDePaiement() === $this) {
+                $transaction->setMoyenDePaiement(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function __toString() {
+        return $this->getTitle();
+    }
+}

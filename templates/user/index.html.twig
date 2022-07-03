@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User index{% endblock %}
+
+{% block body %}
+    <h1>Liste des utilisateurs</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Identifiant</th>
+                <th>Email</th>
+                <th>Rôles</th>
+                <th>Prénom</th>
+                <th>Nom</th>
+                <th>Date de création</th>
+                <th>Voir</th>
+                <th>Modifier</th>
+                <th>Supprimer</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
+                <td>{{ user.firstName }}</td>
+                <td>{{ user.lastName }}</td>
+                <td>{{ user.createdAt ? user.createdAt|date('d/m/Y H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_user_show', {'id': user.id}) }}"><img src="{{ asset('img/details.png') }}" width="30px"></a>
+                </td>
+                <td>
+                    <a href="{{ path('app_user_edit', {'id': user.id}) }}"><img src="{{ asset('img/pen.png') }}" width="30px"></a>
+                </td>
+                <td>
+                    <a href="{{ path('app_user_delete', {'id': user.id}) }}"><img src="{{ asset('img/garbage.png') }}" width="30px"></a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="btnContainer">
+        <div class="btn"><div><a href="/"><p>Retour</p></a></div></div>
+    </div>
+{% endblock %}

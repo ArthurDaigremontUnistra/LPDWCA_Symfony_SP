@@ -18,6 +18,9 @@ use App\Repository\CategoryRepository;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use App\Entity\Category;
 
 #[Route('/transaction')]
 class TransactionController extends AbstractController
@@ -25,8 +28,10 @@ class TransactionController extends AbstractController
     #[Route('/', name: 'app_transaction_index', methods: ['GET'])]
     public function index(TransactionRepository $transactionRepository): Response
     {
+        $user = $this->getUser();
+        
         return $this->render('transaction/index.html.twig', [
-            'transactions' => $transactionRepository->findAll(),
+            'transactions' => $transactionRepository->findByUserOrderedByDescId($user),
         ]);
     }
 
@@ -50,17 +55,26 @@ class TransactionController extends AbstractController
                     'choice_label' => 'title',
                     'choices' => $categories,
                     'placeholder' => "Sélectionnez une catégorie",
-                    'constraints' => new NotBlank(['message' => 'Sélectionnez une catégorie'])
+                    'constraints' => new NotBlank(['message' => 'Sélectionnez une catégorie']),
+                    'label' => 'Catégorie'
                 ]);
             })
-            ->add('name')
-            ->add('montant')
+            ->add('name', TextType::class, ['label' => 'Nom'])
+            ->add('montant', NumberType::class, ['label' => 'Montant'])
             ->add('type', EntityType::class, [
                 'class' => 'App\Entity\Type',
                 'choice_label' => 'title',
                 'disabled' => true,
                 'placeholder' => "Sélectionnez un type",
-                'constraints' => new NotBlank(['message' => 'Sélectionnez un type'])
+                'constraints' => new NotBlank(['message' => 'Sélectionnez un type']),
+                'label' => 'Type'
+            ])
+            ->add('moyenDePaiement', EntityType::class, [
+                'class' => 'App\Entity\MoyenDePaiement',
+                'choice_label' => 'title',
+                'placeholder' => "Sélectionnez un moyen de paiement",
+                'constraints' => new NotBlank(['message' => 'Sélectionnez un moyen de paiement']),
+                'label' => 'Moyen de paiement'
             ])
             ->getForm();
 
@@ -72,6 +86,7 @@ class TransactionController extends AbstractController
                 $transaction->setMontant($form->getData()['montant']);
                 $transaction->setType($form->getData()['type']);
                 $transaction->setCategory($form->getData()['category']);
+                $transaction->setMoyenDePaiement($form->getData()['moyenDePaiement']);
                 $em->persist($transaction);
                 $em->flush();
                 $transactionRepository->add($transaction, true);
@@ -97,17 +112,26 @@ class TransactionController extends AbstractController
                     'choice_label' => 'title',
                     'choices' => $categories,
                     'placeholder' => "Sélectionnez une catégorie",
-                    'constraints' => new NotBlank(['message' => 'Sélectionnez une catégorie'])
+                    'constraints' => new NotBlank(['message' => 'Sélectionnez une catégorie']),
+                    'label' => 'Catégorie'
                 ]);
             })
-            ->add('name')
-            ->add('montant')
+            ->add('name', TextType::class, ['label' => 'Nom'])
+            ->add('montant', NumberType::class, ['label' => 'Montant'])
             ->add('type', EntityType::class, [
                 'class' => 'App\Entity\Type',
                 'choice_label' => 'title',
                 'disabled' => true,
                 'placeholder' => "Sélectionnez un type",
-                'constraints' => new NotBlank(['message' => 'Sélectionnez un type'])
+                'constraints' => new NotBlank(['message' => 'Sélectionnez un type']),
+                'label' => 'Type'
+            ])
+            ->add('moyenDePaiement', EntityType::class, [
+                'class' => 'App\Entity\MoyenDePaiement',
+                'choice_label' => 'title',
+                'placeholder' => "Sélectionnez un moyen de paiement",
+                'constraints' => new NotBlank(['message' => 'Sélectionnez un moyen de paiement']),
+                'label' => 'Moyen de paiement'
             ])
             ->getForm();
 
@@ -119,6 +143,7 @@ class TransactionController extends AbstractController
                 $transaction->setMontant($form->getData()['montant']);
                 $transaction->setType($form->getData()['type']);
                 $transaction->setCategory($form->getData()['category']);
+                $transaction->setMoyenDePaiement($form->getData()['moyenDePaiement']);
                 $em->persist($transaction);
                 $em->flush();
                 $transactionRepository->add($transaction, true);
@@ -139,21 +164,141 @@ class TransactionController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_transaction_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Transaction $transaction, TransactionRepository $transactionRepository): Response
+    public function edit(Request $request, TypeRepository $typeRepository, CategoryRepository $categoryRepository, EntityManagerInterface $em, TransactionRepository $transactionRepository, Transaction $transaction): Response
     {
-        $form = $this->createForm(TransactionType::class, $transaction);
-        $form->handleRequest($request);
+        $user = $this->getUser();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $transactionRepository->add($transaction, true);
+        $currentId = $_SERVER['REQUEST_URI'];
+        $currentId = str_replace("edit", "",$currentId);
+        $currentId = str_replace("/", "",$currentId);
+        $currentId = str_replace("transaction", "",$currentId);
 
-            return $this->redirectToRoute('app_transaction_index', [], Response::HTTP_SEE_OTHER);
-        }
+        $currentId = intval($currentId);
+        
+        $currentTransaction = $em->createQueryBuilder('t')
+            ->select('t')
+            ->from('App\Entity\Transaction', 't')
+            ->where('t.id = :id')
+            ->setParameter('id', $currentId)
+            ->orderBy('t.id', 'ASC')
+            ->getQuery()
+            ->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
 
-        return $this->renderForm('transaction/edit.html.twig', [
-            'transaction' => $transaction,
-            'form' => $form,
-        ]);
+        $currentName = $currentTransaction[0]['name'];
+        $currentMontant = $currentTransaction[0]['montant'];
+
+         if($_GET['type'] == 'credit')
+         {
+            $form = $this->createFormBuilder(['type' => $typeRepository->find(1)])
+            ->addEventListener(FormEvents::PRE_SET_DATA, function(FormEvent $event) use ($categoryRepository) {
+                $type = $event->getData()['type'] ?? null;
+
+                $categories = $type === null ? [] : $categoryRepository->findByTypeOrderedByAscName($type);
+
+                $event->getForm()
+                ->remove('category')
+                ->add('category', EntityType::class, [
+                    'class' => 'App\Entity\Category',
+                    'choice_label' => 'title',
+                    'choices' => $categories,
+                    'placeholder' => "Sélectionnez une catégorie",
+                    'constraints' => new NotBlank(['message' => 'Sélectionnez une catégorie']),
+                    'label' => 'Catégorie'
+                ]);
+            })
+            ->add('name', TextType::class, ['data' => $currentName, 'label' => 'Nom'])
+            ->add('montant', NumberType::class, ['data' => $currentMontant, 'label' => 'Montant'])
+            ->add('type', EntityType::class, [
+                'class' => 'App\Entity\Type',
+                'choice_label' => 'title',
+                'disabled' => true,
+                'placeholder' => "Sélectionnez un type",
+                'constraints' => new NotBlank(['message' => 'Sélectionnez un type']),
+                'label' => 'Type'
+            ])
+            ->add('moyenDePaiement', EntityType::class, [
+                'class' => 'App\Entity\MoyenDePaiement',
+                'choice_label' => 'title',
+                'placeholder' => "Sélectionnez un moyen de paiement",
+                'constraints' => new NotBlank(['message' => 'Sélectionnez un moyen de paiement']),
+                'label' => 'Moyen de paiement'
+            ])
+            ->getForm();
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                $transaction->setUser($user);
+                $transaction->setName($form->getData()['name']);
+                $transaction->setMontant($form->getData()['montant']);
+                $transaction->setType($form->getData()['type']);
+                $transaction->setCategory($form->getData()['category']);
+                $transaction->setMoyenDePaiement($form->getData()['moyenDePaiement']);
+                $em->persist($transaction);
+                $em->flush();
+                $transactionRepository->add($transaction, true);
+
+                return $this->redirectToRoute('app_transaction_index', [], Response::HTTP_SEE_OTHER);
+            }
+
+            return $this->renderForm('transaction/edit.html.twig', compact('form'));
+         }
+         elseif($_GET['type'] == 'debit')
+         {
+            $form = $this->createFormBuilder(['type' => $typeRepository->find(2)])
+            ->addEventListener(FormEvents::PRE_SET_DATA, function(FormEvent $event) use ($categoryRepository) {
+                $type = $event->getData()['type'] ?? null;
+
+                $categories = $type === null ? [] : $categoryRepository->findByTypeOrderedByAscName($type);
+
+                $event->getForm()
+                ->remove('category')
+                ->add('category', EntityType::class, [
+                    'class' => 'App\Entity\Category',
+                    'choice_label' => 'title',
+                    'choices' => $categories,
+                    'placeholder' => "Sélectionnez une catégorie",
+                    'constraints' => new NotBlank(['message' => 'Sélectionnez une catégorie']),
+                    'label' => 'Catégorie'
+                ]);
+            })
+            ->add('name', TextType::class, ['data' => $currentName, 'label' => 'Nom'])
+            ->add('montant', NumberType::class, ['data' => $currentMontant, 'label' => 'Montant'])
+            ->add('type', EntityType::class, [
+                'class' => 'App\Entity\Type',
+                'choice_label' => 'title',
+                'disabled' => true,
+                'placeholder' => "Sélectionnez un type",
+                'constraints' => new NotBlank(['message' => 'Sélectionnez un type']),
+                'label' => 'Type'
+            ])
+            ->add('moyenDePaiement', EntityType::class, [
+                'class' => 'App\Entity\MoyenDePaiement',
+                'choice_label' => 'title',
+                'placeholder' => "Sélectionnez un moyen de paiement",
+                'constraints' => new NotBlank(['message' => 'Sélectionnez un moyen de paiement']),
+                'label' => 'Moyen de paiement'
+            ])
+            ->getForm();
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                $transaction->setUser($user);
+                $transaction->setName($form->getData()['name']);
+                $transaction->setMontant($form->getData()['montant']);
+                $transaction->setType($form->getData()['type']);
+                $transaction->setCategory($form->getData()['category']);
+                $transaction->setMoyenDePaiement($form->getData()['moyenDePaiement']);
+                $em->persist($transaction);
+                $em->flush();
+                $transactionRepository->add($transaction, true);
+
+                return $this->redirectToRoute('app_transaction_index', [], Response::HTTP_SEE_OTHER);
+            }
+
+            return $this->renderForm('transaction/edit.html.twig', compact('form'));
+         }
     }
 
     #[Route('/{id}', name: 'app_transaction_delete', methods: ['POST'])]

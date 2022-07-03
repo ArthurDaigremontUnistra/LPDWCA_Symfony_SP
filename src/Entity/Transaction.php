@@ -35,6 +35,10 @@ class Transaction
     #[ORM\JoinColumn(nullable: true)]
     private $category;
 
+    #[ORM\ManyToOne(targetEntity: MoyenDePaiement::class, inversedBy: 'transactions')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $moyenDePaiement;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -118,5 +122,17 @@ class Transaction
 
     public function __toString() {
         return $this->getName();
+    }
+
+    public function getMoyenDePaiement(): ?MoyenDePaiement
+    {
+        return $this->moyenDePaiement;
+    }
+
+    public function setMoyenDePaiement(?MoyenDePaiement $moyenDePaiement): self
+    {
+        $this->moyenDePaiement = $moyenDePaiement;
+
+        return $this;
     }
 }

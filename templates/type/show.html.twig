@@ -3,16 +3,12 @@
 {% block title %}Type{% endblock %}
 
 {% block body %}
-    <h1>Type</h1>
+    <h1>Détails du type #{{ type.id }}</h1>
 
     <table class="table">
         <tbody>
             <tr>
-                <th>Id</th>
-                <td>{{ type.id }}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
+                <th>Nom</th>
                 <td>{{ type.title }}</td>
             </tr>
             <tr>
@@ -22,9 +18,13 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_type_index') }}">back to list</a>
+    <div class="btnContainer">
 
-    <a href="{{ path('app_type_edit', {'id': type.id}) }}">edit</a>
+        <div class="btn"><div><a href="{{ path('app_type_index') }}">Retour</a></div></div>
+
+        <div class="btn"><div><a href="{{ path('app_type_edit', {'id': type.id}) }}">Modifier</a></div></div>
+
+    </div>
 
     {{ include('type/_delete_form.html.twig') }}
 {% endblock %}

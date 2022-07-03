@@ -3,28 +3,32 @@
 {% block title %}Category{% endblock %}
 
 {% block body %}
-    <h1>Category</h1>
+    <h1>Détails de la catégorie #{{ category.id }}</h1>
 
     <table class="table">
         <tbody>
             <tr>
-                <th>Id</th>
-                <td>{{ category.id }}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
+                <th>Nom</th>
                 <td>{{ category.title }}</td>
             </tr>
             <tr>
                 <th>Description</th>
                 <td>{{ category.description }}</td>
             </tr>
+            <tr>
+                <th>Type</th>
+                <td>{{ category.type }}</td>
+            </tr>
         </tbody>
     </table>
 
-    <a href="{{ path('app_category_index') }}">back to list</a>
+    <div class="btnContainer">
 
-    <a href="{{ path('app_category_edit', {'id': category.id}) }}">edit</a>
+        <div class="btn"><div><a href="{{ path('app_category_index') }}">Retour</a></div></div>
+
+        <div class="btn"><div><a href="{{ path('app_category_edit', {'id': category.id}) }}">Modifier</a></div></div>
+
+    </div>
 
     {{ include('category/_delete_form.html.twig') }}
 {% endblock %}

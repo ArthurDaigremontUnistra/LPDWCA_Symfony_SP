@@ -3,15 +3,18 @@
 {% block title %}Category index{% endblock %}
 
 {% block body %}
-    <h1>Category index</h1>
+    <h1>Liste des catégories</h1>
 
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Title</th>
+                <th>Identifiant</th>
+                <th>Nom</th>
                 <th>Description</th>
-                <th>actions</th>
+                <th>Type</th>
+                <th>Voir</th>
+                <th>Modifier</th>
+                <th>Supprimer</th>
             </tr>
         </thead>
         <tbody>
@@ -20,18 +23,30 @@
                 <td>{{ category.id }}</td>
                 <td>{{ category.title }}</td>
                 <td>{{ category.description }}</td>
-                <td>
-                    <a href="{{ path('app_category_show', {'id': category.id}) }}">show</a>
-                    <a href="{{ path('app_category_edit', {'id': category.id}) }}">edit</a>
+                <td>{{ category.type }}</td>
+                <td class="imgIcon">
+                    <a href="{{ path('app_category_show', {'id': category.id}) }}"><img src="{{ asset('img/details.png') }}" width="30px"></a>
+                </td>
+                <td class="imgIcon">
+                    <a href="{{ path('app_category_edit', {'id': category.id}) }}"><img src="{{ asset('img/pen.png') }}" width="30px"></a>
+                </td>
+                <td class="imgIcon">
+                    <a href="{{ path('app_category_delete', {'id': category.id}) }}"><img src="{{ asset('img/garbage.png') }}" width="30px"></a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="4">no records found</td>
+                <td colspan="4">Pas de catégorie.</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_category_new') }}">Create new</a>
+    <div class="btnContainer">
+        <div class="btn"><div><a href="{{ path('app_category_new') }}">Créer une nouvelle catégorie</a></div></div>
+    </div>
+
+    <div class="btnContainer">
+        <div class="btn"><div><a href="/"><p>Retour</p></a></div></div>
+    </div>
 {% endblock %}

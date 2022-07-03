@@ -3,18 +3,47 @@
 {% block title %}Hello HomeController!{% endblock %}
 
 {% block body %}
+
 <style>
     .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
 </style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+<main class="main_accueil">
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ 'C:/symfony/spbudget/src/Controller/HomeController.php'|file_link(0) }}">src/Controller/HomeController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'C:/symfony/spbudget/templates/home/index.html.twig'|file_link(0) }}">templates/home/index.html.twig</a></code></li>
-    </ul>
-</div>
+    <h1>Bienvenue sur votre application de gestion de budget !</h1>
+
+    {% if is_granted('ROLE_ADMIN') %}
+
+        <div><div><a href="{{ path('app_transaction_index') }}"><p>Visualiser mes transactions</p></a></div></div>
+
+        <div class="btnZoneAdmin">
+            <div><a href="{{ path('app_user_index') }}"><p>Gérer les utilisateurs</p></a></div>
+            <div><a href="{{ path('app_type_index') }}"><p>Gérer les types de transactions</p></a></div>
+            <div><a href="{{ path('app_category_index') }}"><p>Gérer les catégories</p></a></div>
+            <div><a href="{{ path('app_moyen_de_paiement_index') }}"><p>Gérer les moyens de paiement</p></a></div>
+        </div>
+
+        <img src="{{ asset('img/vector.jpg') }}">
+
+        <div id="deleteBtn"><a href="{{ path('app_logout') }}">Me déconnecter</a></div>
+
+    {% elseif is_granted('ROLE_USER') %}
+
+        <div><div><a href="{{ path('app_transaction_index') }}"><p>Visualiser mes transactions</p></a></div></div>
+
+        <img src="{{ asset('img/vector.jpg') }}">
+
+        <div id="deleteBtn"><a href="{{ path('app_logout') }}">Me déconnecter</a></div>
+
+    {% else %}
+
+        <div><div><a href="{{ path('app_login') }}"><p>Me connecter</p></a></div></div>
+
+        <img src="{{ asset('img/vector.jpg') }}">
+
+    {% endif %}
+
+</main>
+
 {% endblock %}

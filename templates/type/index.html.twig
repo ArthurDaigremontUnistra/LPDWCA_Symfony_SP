@@ -3,15 +3,17 @@
 {% block title %}Type index{% endblock %}
 
 {% block body %}
-    <h1>Type index</h1>
+    <h1>Liste des types</h1>
 
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Title</th>
+                <th>Identifiant</th>
+                <th>Nom</th>
                 <th>Coefficient</th>
-                <th>actions</th>
+                <th>Voir</th>
+                <th>Modifier</th>
+                <th>Supprimer</th>
             </tr>
         </thead>
         <tbody>
@@ -20,18 +22,29 @@
                 <td>{{ type.id }}</td>
                 <td>{{ type.title }}</td>
                 <td>{{ type.coefficient }}</td>
-                <td>
-                    <a href="{{ path('app_type_show', {'id': type.id}) }}">show</a>
-                    <a href="{{ path('app_type_edit', {'id': type.id}) }}">edit</a>
+                <td class="imgIcon">
+                    <a href="{{ path('app_type_show', {'id': type.id}) }}"><img src="{{ asset('img/details.png') }}" width="30px"></a>
+                </td>
+                <td class="imgIcon">
+                    <a href="{{ path('app_type_edit', {'id': type.id}) }}"><img src="{{ asset('img/pen.png') }}" width="30px"></a>
+                </td>
+                <td class="imgIcon">
+                    <a href="{{ path('app_type_edit', {'id': type.id}) }}"><img src="{{ asset('img/garbage.png') }}" width="30px"></a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="4">no records found</td>
+                <td colspan="4">Pas de type.</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_type_new') }}">Create new</a>
+    <div class="btnContainer">
+        <div class="btn"><div><a href="{{ path('app_type_new') }}">Créer un nouveau type</a></div></div>
+    </div>
+
+    <div class="btnContainer">
+        <div class="btn"><div><a href="/"><p>Retour</p></a></div></div>
+    </div>
 {% endblock %}

@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Transaction;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\User;
 
 /**
  * @extends ServiceEntityRepository<Transaction>
@@ -37,6 +38,17 @@ class TransactionRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function findByUserOrderedByDescId(User $user): array
+    {
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.user = :user')
+            ->setParameter('user', $user)
+            ->orderBy('t.id', 'DESC')
+            ->getQuery()
+            ->getResult()
+        ;
     }
 
 //    /**
